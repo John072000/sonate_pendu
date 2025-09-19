@@ -1,0 +1,55 @@
+{% extends 'layout.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style2.css') }}">
+{% endblock %}
+
+{% block content %}
+<table>
+  <tr>
+    <td><button>a</button></td>
+	 <td><a href="/b" class="button">b</a>
+</td>
+	 <td><button>c</button></td>
+	 <td><button>d</button></td>
+	 <td><button>e</button></td>
+	 <td><button>f</button></td>
+	 <td><button>g</button></td>
+  </tr>
+  <tr>
+    <td><button>h</button></td>
+	 <td><button>i</button></td>
+	 <td><button>j</button></td>
+	 <td><button>k</button></td>
+	 <td><button>l</button></td>
+	 <td><button>m</button></td>
+	 <td><button>n</button></td>
+  </tr>
+  <tr>
+    <td><button>o</button></td>
+	 <td><button>p</button></td>
+	 <td><button>q</button></td>
+	 <td><button>r</button></td>
+	 <td><button>s</button></td>
+	 <td><button>t</button></td>
+	 <td><button>u</button></td>
+  </tr>
+  <tr>
+    <td><button>v</button></td>
+	 <td><button>w</button></td>
+	 <td><button>x</button></td>
+	 <td><button>y</button></td>
+	 <td><button>z</button></td>
+	 <td></td>
+	 <td></td>
+  </tr>
+</table>
+
+<p id="mot">sdfdsf</p>
+
+<form action="/a">
+    <input type="submit" value="Go to A" />
+</form>
+
+
+{% endblock %}
