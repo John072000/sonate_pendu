@@ -162,5 +162,5 @@ cython_debug/
 .DS_Store
 
 test42.py
-static/
+/static/
 templates/
