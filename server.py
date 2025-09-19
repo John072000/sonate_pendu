@@ -58,4 +58,4 @@ def choix_lettre():
         ma_lettre = request.form["bouton_lettre"]
         print(ma_lettre)
 
-    return render_template("test.html")
+    return render_template("test.html")#
