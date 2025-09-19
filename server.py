@@ -5,26 +5,27 @@ app = Flask(__name__)
 
 mot_a_trouver = "arc"
 
-mot_en_cours = "___"
+etat_actuel_du_mot = "___"
 
-mot_evolutif = "b"
 
 @app.route("/")
-def home():
+def lesnomsdefonctionsnecomptentpas():
     return render_template("home.html")
+
 
 @app.route("/play", methods=["POST"])
 def play():
     if request.method == "POST":
         mon_champ = request.form["mon_champ"]
+        # Affiche mon_champ dans la console exécutant server.py, à des fins de test
         print(mon_champ)
     
-    return render_template("play.html", nom=mon_champ, mot=mot_en_cours)
+    return render_template("play.html", nom=mon_champ, mot="arbre")
+
 
 @app.route("/test")
 def test():
     return render_template("test.html")
-
 
 
 @app.route("/a")
@@ -51,10 +52,10 @@ def a():
 
     return render_template("play.html", mot=mot_evolutif)
 
+@app.route("/choix_lettre", methods=["POST"])
+def choix_lettre():
+    if request.method == "POST":
+        ma_lettre = request.form["bouton_lettre"]
+        print(ma_lettre)
 
-mot_en_cours = "_____"
-
-def ma_fonction():
-
-    mot_en_cours = 'a' + mot_en_cours[1:]
-
+    return render_template("test.html")
