@@ -14,7 +14,7 @@ for s in tableau_de_mots:
     print(s)
 
 print("-----------")
-# Récupérer un mot au hasard
 
+# Récupérer un mot au hasard:
 j = int(random() * longueur_du_tableau)
 print(tableau_de_mots[j])
