@@ -5,45 +5,46 @@
 {% endblock %}
 
 {% block content %}
-<table>
-  <tr>
-    <td><button>a</button></td>
-	 <td><a href="/b" class="button">b</a>
-</td>
-	 <td><button>c</button></td>
-	 <td><button>d</button></td>
-	 <td><button>e</button></td>
-	 <td><button>f</button></td>
-	 <td><button>g</button></td>
-  </tr>
-  <tr>
-    <td><button>h</button></td>
-	 <td><button>i</button></td>
-	 <td><button>j</button></td>
-	 <td><button>k</button></td>
-	 <td><button>l</button></td>
-	 <td><button>m</button></td>
-	 <td><button>n</button></td>
-  </tr>
-  <tr>
-    <td><button>o</button></td>
-	 <td><button>p</button></td>
-	 <td><button>q</button></td>
-	 <td><button>r</button></td>
-	 <td><button>s</button></td>
-	 <td><button>t</button></td>
-	 <td><button>u</button></td>
-  </tr>
-  <tr>
-    <td><button>v</button></td>
-	 <td><button>w</button></td>
-	 <td><button>x</button></td>
-	 <td><button>y</button></td>
-	 <td><button>z</button></td>
-	 <td></td>
-	 <td></td>
-  </tr>
-</table>
+<form action="/choix_lettre" method="post">
+	<table>
+	  <tr>
+	  	 <td><input name="bouton_lettre" type="submit" value="a"></td>
+		 <td><input name="bouton_lettre" type="submit" value="b"></td>
+		 <td><input name="bouton_lettre" type="submit" value="c"></td>
+		 <td><input name="bouton_lettre" type="submit" value="d"></td>
+		 <td><input name="bouton_lettre" type="submit" value="e"></td>
+		 <td><input name="bouton_lettre" type="submit" value="f"></td>
+		 <td><input name="bouton_lettre" type="submit" value="g"></td>
+	  </tr>
+	  <tr>
+		 <td><input name="bouton_lettre" type="submit" value="h"></td>
+		 <td><input name="bouton_lettre" type="submit" value="i"></td>
+		 <td><input name="bouton_lettre" type="submit" value="j"></td>
+		 <td><input name="bouton_lettre" type="submit" value="k"></td>
+		 <td><input name="bouton_lettre" type="submit" value="l"></td>
+		 <td><input name="bouton_lettre" type="submit" value="m"></td>
+		 <td><input name="bouton_lettre" type="submit" value="n"></td>
+	  </tr>
+	  <tr>
+		 <td><input name="bouton_lettre" type="submit" value="o"></td>
+		 <td><input name="bouton_lettre" type="submit" value="p"></td>
+		 <td><input name="bouton_lettre" type="submit" value="q"></td>
+		 <td><input name="bouton_lettre" type="submit" value="r"></td>
+		 <td><input name="bouton_lettre" type="submit" value="s"></td>
+		 <td><input name="bouton_lettre" type="submit" value="t"></td>
+		 <td><input name="bouton_lettre" type="submit" value="u"></td>
+	  </tr>
+	  <tr>
+		 <td><input name="bouton_lettre" type="submit" value="v"></td>
+		 <td><input name="bouton_lettre" type="submit" value="w"></td>
+		 <td><input name="bouton_lettre" type="submit" value="x"></td>
+		 <td><input name="bouton_lettre" type="submit" value="y"></td>
+		 <td><input name="bouton_lettre" type="submit" value="z"></td>
+		 <td></td>
+		 <td></td>
+	  </tr>
+	</table>
+</form>
 
 <p id="mot">sdfdsf</p>
 

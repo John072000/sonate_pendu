@@ -11,7 +11,7 @@ table {
 
 td, th {
   border: 1px solid rgb(190,190,190);
-  padding: 1px 2px;
+  padding: 2px 2px;
 }
 
 th {
@@ -30,15 +30,6 @@ tr:nth-child(odd) td {
   background-color: rgb(245,245,245);
 }
 
-button {
-	padding: 8px 13px;
-}
-
-a.button {
-    padding: 1px 6px;
-    border: 1px outset buttonborder;
-    border-radius: 3px;
-    color: buttontext;
-    background-color: buttonface;
-    text-decoration: none;
+input {
+	padding: 6px 13px;
 }
