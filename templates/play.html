@@ -1,0 +1,56 @@
+{% extends 'layout.html' %}
+
+{% block title %}Jeu du pendu{% endblock %}
+
+{% block content %}
+<h1 class="title">Jeu du pendu</h1>
+<h3>Bonjour, {{ nom_utilisateur }}</h3>
+<p id="etat_actuel_du_mot">Mot à trouver: {{etat_actuel_du_mot}}</p>
+<p id="tentatives">Il vous reste {{ tentatives }} tentatives.</p>
+
+<form action="/choix_lettre" method="post">
+	<table>
+	  <tr>
+	  	 <td><input name="bouton_lettre" type="submit" value="a"></td>
+		 <td><input name="bouton_lettre" type="submit" value="b"></td>
+		 <td><input name="bouton_lettre" type="submit" value="c"></td>
+		 <td><input name="bouton_lettre" type="submit" value="d"></td>
+		 <td><input name="bouton_lettre" type="submit" value="e"></td>
+		 <td><input name="bouton_lettre" type="submit" value="f"></td>
+		 <td><input name="bouton_lettre" type="submit" value="g"></td>
+	  </tr>
+	  <tr>
+		 <td><input name="bouton_lettre" type="submit" value="h"></td>
+		 <td><input name="bouton_lettre" type="submit" value="i"></td>
+		 <td><input name="bouton_lettre" type="submit" value="j"></td>
+		 <td><input name="bouton_lettre" type="submit" value="k"></td>
+		 <td><input name="bouton_lettre" type="submit" value="l"></td>
+		 <td><input name="bouton_lettre" type="submit" value="m"></td>
+		 <td><input name="bouton_lettre" type="submit" value="n"></td>
+	  </tr>
+	  <tr>
+		 <td><input name="bouton_lettre" type="submit" value="o"></td>
+		 <td><input name="bouton_lettre" type="submit" value="p"></td>
+		 <td><input name="bouton_lettre" type="submit" value="q"></td>
+		 <td><input name="bouton_lettre" type="submit" value="r"></td>
+		 <td><input name="bouton_lettre" type="submit" value="s"></td>
+		 <td><input name="bouton_lettre" type="submit" value="t"></td>
+		 <td><input name="bouton_lettre" type="submit" value="u"></td>
+	  </tr>
+	  <tr>
+		 <td><input name="bouton_lettre" type="submit" value="v"></td>
+		 <td><input name="bouton_lettre" type="submit" value="w"></td>
+		 <td><input name="bouton_lettre" type="submit" value="x"></td>
+		 <td><input name="bouton_lettre" type="submit" value="y"></td>
+		 <td><input name="bouton_lettre" type="submit" value="z"></td>
+		 <td></td>
+		 <td></td>
+	  </tr>
+	</table>
+</form>
+
+<h1 id="message_de_fin">{{ message_de_fin }}</h1>
+<form action="/play" method="post">
+    <input id="bouton_recommencer" type="submit" value="Recommencer">
+</form>
+{% endblock %}

@@ -1,61 +1,64 @@
 from flask import Flask, render_template, request
+from random import choice
 
 app = Flask(__name__)
 
 
-mot_a_trouver = "arc"
-
-etat_actuel_du_mot = "___"
+mot_a_trouver = ""
+etat_actuel_du_mot = ""
+nom_utilisateur = ""
+tentatives_restantes = 5
 
 
 @app.route("/")
-def lesnomsdefonctionsnecomptentpas():
+def home():
     return render_template("home.html")
-
 
 @app.route("/play", methods=["POST"])
 def play():
     if request.method == "POST":
-        mon_champ = request.form["mon_champ"]
-        # Affiche mon_champ dans la console exécutant server.py, à des fins de test
-        print(mon_champ)
-    
-    return render_template("play.html", nom=mon_champ, mot="arbre")
+        global nom_utilisateur
+        # Si on recommence la partie, il n'est pas besoin de ré-assigner le nom d'utilisateur.
+        if(request.form.__contains__("champ_nom")):
+            nom_utilisateur = request.form["champ_nom"]
+        global mot_a_trouver
+        mot_a_trouver = choisir_un_mot_au_hasard()
+        global etat_actuel_du_mot
+        etat_actuel_du_mot = '_' * len(mot_a_trouver)
+        global tentatives_restantes
+        tentatives_restantes = 5
 
-
-@app.route("/test")
-def test():
-    return render_template("test.html")
-
-
-@app.route("/a")
-def a():
-    f = open("templates/play.html")
-
-    mot_du_pendu = "___"
-
-    mon_html = f.read()
-    index_debut_de_balise = mon_html.find("id=\"pendu\"") + len("id=\"pendu\">")
-    j = 0
-    current_mot = ""
-    while j < len("{{ mot }}"):
-        current_mot += mon_html[index_debut_de_balise + j]
-        j += 1
-    print("1ere méthode: " + current_mot)
-
-    index_fin_de_balise = mon_html.find('<', index_debut_de_balise)
-
-    print("2eme méthode: " + mon_html[index_debut_de_balise:index_fin_de_balise])
-    
-    global mot_evolutif
-    mot_evolutif += 'a'
-
-    return render_template("play.html", mot=mot_evolutif)
+    return render_template("play.html", nom_utilisateur=nom_utilisateur, etat_actuel_du_mot=etat_actuel_du_mot, tentatives=tentatives_restantes)
 
 @app.route("/choix_lettre", methods=["POST"])
 def choix_lettre():
     if request.method == "POST":
-        ma_lettre = request.form["bouton_lettre"]
-        print(ma_lettre)
+        global tentatives_restantes
+        global etat_actuel_du_mot
 
-    return render_template("test.html")#
+        lettre_choisie = request.form["bouton_lettre"]
+
+        i = 0
+        tentative_echouee = True
+        for lettre in mot_a_trouver:
+            if lettre == lettre_choisie:
+                etat_actuel_du_mot = etat_actuel_du_mot[0:i] + lettre_choisie + etat_actuel_du_mot[i+1:]
+                tentative_echouee = False
+            i += 1
+
+        if mot_a_trouver == etat_actuel_du_mot:
+            print("Vous avez gagné, Bravo!")
+            return render_template("play.html", nom_utilisateur=nom_utilisateur, etat_actuel_du_mot=etat_actuel_du_mot, tentatives=tentatives_restantes, message_de_fin = "Vous avez gagné, " + nom_utilisateur + ", Bravo! Voulez-vous recommencer?")
+        
+        if tentative_echouee:
+            tentatives_restantes -= 1
+            if tentatives_restantes == 0:
+                return render_template("play.html", nom_utilisateur=nom_utilisateur, etat_actuel_du_mot=etat_actuel_du_mot, tentatives=tentatives_restantes, message_de_fin="Vous avez perdu! Recommencer?")
+
+    return render_template("play.html", nom_utilisateur=nom_utilisateur, etat_actuel_du_mot=etat_actuel_du_mot, tentatives=tentatives_restantes)
+
+def choisir_un_mot_au_hasard():
+    with open("dictionnaire.txt", encoding="utf-8") as f:
+        tableau_de_mots = [ligne.split(";")[0] for ligne in f]
+
+    return choice(tableau_de_mots)

@@ -18,3 +18,5 @@ print("-----------")
 # Récupérer un mot au hasard:
 j = int(random() * longueur_du_tableau)
 print(tableau_de_mots[j])
+
+f.close()
