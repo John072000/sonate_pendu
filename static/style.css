@@ -14,15 +14,21 @@ h4, h5, h6 {
 }
 
 table {
-  border-collapse: collapse;
   border: 2px solid rgb(200,200,200);
-  letter-spacing: 1px;
 }
 
-td, th {
+td {
   border: 1px solid rgb(190,190,190);
-  padding: 2px 2px;
   text-align: center;
+  width: 30px;
+  height: 10px;
+}
+
+input {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 25px;
+  font-weight: bold;
+  padding: 0px 8px;
 }
 
 tr:nth-child(even) td {
@@ -33,12 +39,10 @@ tr:nth-child(odd) td {
   background-color: rgb(245,245,245);
 }
 
-input {
-	padding: 6px 13px;
-}
 
-#message_victoire {
-  color:red;
+
+#message_de_fin {
+  color:rgb(247, 17, 17);
 }
 
 #bouton_recommencer {

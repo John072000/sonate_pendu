@@ -3,11 +3,11 @@ from random import choice
 
 app = Flask(__name__)
 
-
 mot_a_trouver = ""
 etat_actuel_du_mot = ""
 nom_utilisateur = ""
 tentatives_restantes = 5
+
 
 
 @app.route("/")
@@ -22,7 +22,7 @@ def play():
         if(request.form.__contains__("champ_nom")):
             nom_utilisateur = request.form["champ_nom"]
         global mot_a_trouver
-        mot_a_trouver = choisir_un_mot_au_hasard()
+        mot_a_trouver = choisir_un_mot_au_hasard().upper()
         global etat_actuel_du_mot
         etat_actuel_du_mot = '_' * len(mot_a_trouver)
         global tentatives_restantes
@@ -37,6 +37,7 @@ def choix_lettre():
         global etat_actuel_du_mot
 
         lettre_choisie = request.form["bouton_lettre"]
+        lettre_choisie = lettre_choisie.upper()
 
         i = 0
         tentative_echouee = True
@@ -47,13 +48,15 @@ def choix_lettre():
             i += 1
 
         if mot_a_trouver == etat_actuel_du_mot:
-            print("Vous avez gagné, Bravo!")
-            return render_template("play.html", nom_utilisateur=nom_utilisateur, etat_actuel_du_mot=etat_actuel_du_mot, tentatives=tentatives_restantes, message_de_fin = "Vous avez gagné, " + nom_utilisateur + ", Bravo! Voulez-vous recommencer?")
+            return render_template("play.html", nom_utilisateur=nom_utilisateur,
+                                   etat_actuel_du_mot=etat_actuel_du_mot, tentatives=tentatives_restantes,
+                                   message_de_fin = "Vous avez gagné, " + nom_utilisateur + ", Bravo! Voulez-vous recommencer?")
         
         if tentative_echouee:
             tentatives_restantes -= 1
-            if tentatives_restantes == 0:
-                return render_template("play.html", nom_utilisateur=nom_utilisateur, etat_actuel_du_mot=etat_actuel_du_mot, tentatives=tentatives_restantes, message_de_fin="Vous avez perdu! Recommencer?")
+            if tentatives_restantes <= 0:
+                return render_template("play.html", nom_utilisateur=nom_utilisateur, etat_actuel_du_mot=etat_actuel_du_mot,
+                                       tentatives=tentatives_restantes, message_de_fin="Vous avez perdu! Recommencer?")
 
     return render_template("play.html", nom_utilisateur=nom_utilisateur, etat_actuel_du_mot=etat_actuel_du_mot, tentatives=tentatives_restantes)
 

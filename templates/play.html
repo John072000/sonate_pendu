@@ -49,8 +49,18 @@
 	</table>
 </form>
 
-<h1 id="message_de_fin">{{ message_de_fin }}</h1>
-<form action="/play" method="post">
+{% if victoire == True %}
+	<h1 id="message_de_fin">{{ message_de_fin }}</h1>
+	<form action="/play" method="post">
     <input id="bouton_recommencer" type="submit" value="Recommencer">
 </form>
+{% elif defaite == True %}
+	<h1 id="message_de_fin">{{ message_de_fin }}</h1>
+	<form action="/play" method="post">
+    <input id="bouton_recommencer" type="submit" value="Recommencer">
+</form>
+{% else %}
+
+{% endif %}
+
 {% endblock %}
