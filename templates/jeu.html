@@ -1,0 +1,46 @@
+{% extends 'layout.html' %}
+
+{% block title %}Jeu du pendu{% endblock %}
+
+{% block content %}
+
+<div class="barre">
+  <p> Bienvenue {{ nom }} </p>
+  <p> Tableau des scores: </p>
+  <table id="highscores">
+    <tr><td>1. {{ highscores[0][0] }}: {{ highscores[0][1] }} </td></tr>
+    <tr><td>2. {{ highscores[1][0] }}: {{ highscores[1][1] }} </td></tr>
+    <tr><td>3. {{ highscores[2][0] }}: {{ highscores[2][1] }}</td></tr>
+  </table>
+</div>
+
+<div class="content">
+  <h1>Jeu du Pendu</h1>
+  <p><a href="{{ url_for('nouveau') }}">Nouvelle partie</a></p>
+
+  <pre>{{ potence_ascii }}</pre>
+
+  <p>Mot : <strong>{{ mot_masque }}</strong></p>
+  <p>Tentatives restantes : <strong>{{ essais_restants }}</strong> / {{ nb_max_essais }}</p>
+
+  {% if statut == 'en_cours' %}
+  <form action="{{ url_for('proposer') }}" method="post">
+    <table id="lettres">
+    {% for lettre in alphabet %}
+      {% if loop.index0 is divisibleby 7 %}
+        <tr></tr>
+      {% endif %}
+      <td><input name="lettre" type="submit" value="{{ lettre }}"></td>
+    {% endfor %}
+  </table>
+  </form>
+  {% elif statut == 'gagne' %}
+  <p>Bravo ! Vous avez gagné. Le mot était : <strong>{{ mot }}</strong></p>
+  {% else %}
+  <p>Dommage ! Vous avez perdu. Le mot était : <strong>{{ mot }}</strong></p>
+  {% endif %}
+
+  <p>Lettres essayées : {{ lettres_trouvees|join(', ') if lettres_trouvees else '—' }}</p>
+</div>
+  
+{% endblock %}

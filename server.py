@@ -1,5 +1,5 @@
-import random
-from flask import Flask, render_template_string, request, redirect, url_for, session
+import random, string
+from flask import Flask, render_template, request, redirect, url_for, session
 
 appli = Flask(__name__)
 appli.config["SECRET_KEY"] = "secret"
@@ -7,6 +7,7 @@ appli.config["SECRET_KEY"] = "secret"
 nb_max_essais = 7
 mots = []
 
+string.ascii_lowercase
 with open("dictionnaire.txt", encoding="utf-8") as f:
     tableau_de_mots = [ligne.strip().split(";")[0] for ligne in f if ligne.strip()]
 
@@ -23,7 +24,7 @@ def demarrer_nouvelle_partie():
 
 @appli.route("/")
 def accueil():
-    return render_template_string(GABARIT_HTML_ACCUEIL)
+    return render_template("accueil.html")
 
 @appli.route("/demarrer", methods=["POST"])
 def demarrer():
@@ -127,8 +128,8 @@ def jeu():
     highscores.append(("Bob", 6))
     highscores.append(("Jack", 5))
     
-    return render_template_string(
-        GABARIT_HTML_JEU,
+    return render_template(
+        'jeu.html',
         mot_masque=mot_masque,
         lettres_trouvees=lettres_trouvees,
         essais_restants=essais_restants,
@@ -137,7 +138,8 @@ def jeu():
         potence_ascii=potence_ascii,
         mot=mot,
         nom=nom,
-        highscores=highscores
+        highscores=highscores,
+        alphabet = string.ascii_lowercase
     )
 
 
