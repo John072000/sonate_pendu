@@ -6,12 +6,15 @@
 
 <div class="barre">
   <p> Bienvenue {{ nom }} </p>
+  {% if highscores %}
   <p> Tableau des scores: </p>
   <table id="highscores">
-    <tr><td>1. {{ highscores[0][0] }}: {{ highscores[0][1] }} </td></tr>
-    <tr><td>2. {{ highscores[1][0] }}: {{ highscores[1][1] }} </td></tr>
-    <tr><td>3. {{ highscores[2][0] }}: {{ highscores[2][1] }}</td></tr>
+    {% for entree in highscores %}
+      <tr><td>{{ loop.index }}. {{ highscores[loop.index0][0] }}: {{ highscores[loop.index0][1] }}</td></tr>
+    {% endfor %}
   </table>
+  {% endif %}
+  <p> Victoires consécutives: {{ victoires_consecutives }}</p>
 </div>
 
 <div class="content">
@@ -35,10 +38,10 @@
   </table>
   </form>
   {% elif statut == 'gagne' %}
-  <p>Bravo ! Vous avez gagné. Le mot était : <strong>{{ mot }}</strong></p>
+    <p>Bravo ! Vous avez gagné. Le mot était : <strong>{{ mot }}</strong></p>
   {% else %}
-  <p>Dommage ! Vous avez perdu. Le mot était : <strong>{{ mot }}</strong></p>
-  {% endif %}
+    <p>Dommage ! Vous avez perdu. Le mot était : <strong>{{ mot }}</strong></p>
+ {% endif %}
 
   <p>Lettres essayées : {{ lettres_trouvees|join(', ') if lettres_trouvees else '—' }}</p>
 </div>

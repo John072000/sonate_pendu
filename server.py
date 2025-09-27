@@ -1,17 +1,20 @@
-import random, string
+import random, string, re, unicodedata
 from flask import Flask, render_template, request, redirect, url_for, session
 
 appli = Flask(__name__)
 appli.config["SECRET_KEY"] = "secret"
 
-nb_max_essais = 7
+nb_max_essais = 15
 mots = []
+entrees_max = 5 # Nombre d'entrées maximum dans le fichier highscores.txt.
 
 string.ascii_lowercase
 with open("dictionnaire.txt", encoding="utf-8") as f:
     tableau_de_mots = [ligne.strip().split(";")[0] for ligne in f if ligne.strip()]
 
 for mot in tableau_de_mots:
+    mot = unicodedata.normalize('NFKD', mot)  
+    mot = ''.join([c for c in mot if not unicodedata.combining(c)])  
     mots.append(mot.upper())
 
 
@@ -19,7 +22,12 @@ def demarrer_nouvelle_partie():
     session["mot"] = random.choice(mots) if mots else "PYTHON"
     session["lettres_trouvees"] = []
     session["essais_restants"] = nb_max_essais
+    statut = session.get("statut", "")
+    if statut == "en_cours" or statut == "perdu":
+        session["victoires_consecutives"] = 0
     session["statut"] = "en_cours"  # en_cours / gagne / perdu
+    highscores = lire_scores()
+    session["highscores"] = highscores
 
 
 @appli.route("/")
@@ -42,6 +50,8 @@ def jeu():
     essais_restants = session.get("essais_restants", nb_max_essais)
     statut = session.get("statut", "en_cours")
     nom = session.get("nom", "")
+    highscores = session.get("highscores", [])
+    victoires_consecutives = session.get("victoires_consecutives", 0)
 
     liste_masquee = []
     for caractere in mot:
@@ -122,11 +132,6 @@ def jeu():
     if erreurs >= len(etapes_pendu):
         erreurs = len(etapes_pendu) - 1
     potence_ascii = etapes_pendu[erreurs]
-
-    highscores = []
-    highscores.append(("John", 7))
-    highscores.append(("Bob", 6))
-    highscores.append(("Jack", 5))
     
     return render_template(
         'jeu.html',
@@ -139,7 +144,8 @@ def jeu():
         mot=mot,
         nom=nom,
         highscores=highscores,
-        alphabet = string.ascii_lowercase
+        alphabet = string.ascii_lowercase,
+        victoires_consecutives = victoires_consecutives
     )
 
 
@@ -149,6 +155,7 @@ def proposer():
     lettres_trouvees = session.get("lettres_trouvees", [])
     essais_restants = session.get("essais_restants", nb_max_essais)
     statut = session.get("statut", "en_cours")
+    victoires_consecutives = session.get("victoires_consecutives", 0)
 
     if statut == "en_cours" and mot:
         lettre = request.form.get("lettre", "").strip().upper()
@@ -167,12 +174,21 @@ def proposer():
 
                 if tout_trouve:
                     statut = "gagne"
+                    victoires_consecutives += 1
                 elif essais_restants <= 0:
                     statut = "perdu"
+                    highscores = session.get("highscores", [])
+                    highscores.append((session.get("nom"), victoires_consecutives))
+                    highscores.sort(key=lambda x: x[1], reverse=True)
+                    while len(highscores) > entrees_max:
+                        highscores.pop()
+                    sauvegarder_scores(highscores)
+                    victoires_consecutives = 0
 
     session["lettres_trouvees"] = lettres_trouvees
     session["essais_restants"] = essais_restants
     session["statut"] = statut
+    session["victoires_consecutives"] = victoires_consecutives
 
     return redirect(url_for("jeu"))
 
@@ -183,110 +199,32 @@ def nouveau():
     return redirect(url_for("jeu"))
 
 
-GABARIT_HTML_JEU = r"""
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8">
-  <title>Pendu</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <div class="barre">
-    <p> Bienvenue {{ nom }} </p>
-    <p> Tableau des scores: </p>
-    <table id="highscores">
-      <tr><td>1. {{ highscores[0][0] }}: {{ highscores[0][1] }} </td></tr>
-      <tr><td>2. {{ highscores[1][0] }}: {{ highscores[1][1] }} </td></tr>
-      <tr><td>3. {{ highscores[2][0] }}: {{ highscores[2][1] }}</td></tr>
-    </table>
-  </div>
-  <div class="content">
-    <h1>Jeu du Pendu</h1>
-    <p><a href="{{ url_for('nouveau') }}">Nouvelle partie</a></p>
+def lire_scores():
+    highscores = []
+    try:
+        with open("highscores.txt", "r") as f:
+            i = 0
+            for ligne in f:
+                if i >= entrees_max:
+                    break
+                i += 1
+                ligne = re.sub(r"\d+. ", "", ligne, 1) # Efface l'index
+                nom = ligne.split(";")[0].strip()
+                score = int(ligne.split(";")[1].strip())
+                highscores.append((nom, score))
+            highscores.sort(key=lambda x: x[1], reverse=True)    
+    except FileNotFoundError:
+        f = open("highscores.txt", "x")
+        f.close()
+    return highscores
 
-    <pre>{{ potence_ascii }}</pre>
-
-    <p>Mot : <strong>{{ mot_masque }}</strong></p>
-    <p>Tentatives restantes : <strong>{{ essais_restants }}</strong> / {{ nb_max_essais }}</p>
-
-    {% if statut == 'en_cours' %}
-
-        <form action="{{ url_for('proposer') }}" method="post">
-            <table id="lettres">
-                <tr>
-                    <td><input name="lettre" type="submit" value="a"></td>
-                    <td><input name="lettre" type="submit" value="b"></td>
-                    <td><input name="lettre" type="submit" value="c"></td>
-                    <td><input name="lettre" type="submit" value="d"></td>
-                    <td><input name="lettre" type="submit" value="e"></td>
-                    <td><input name="lettre" type="submit" value="f"></td>
-                    <td><input name="lettre" type="submit" value="g"></td>
-                </tr>
-                <tr>
-                    <td><input name="lettre" type="submit" value="h"></td>
-                    <td><input name="lettre" type="submit" value="i"></td>
-                    <td><input name="lettre" type="submit" value="j"></td>
-                    <td><input name="lettre" type="submit" value="k"></td>
-                    <td><input name="lettre" type="submit" value="l"></td>
-                    <td><input name="lettre" type="submit" value="m"></td>
-                    <td><input name="lettre" type="submit" value="n"></td>
-                </tr>
-                <tr>
-                    <td><input name="lettre" type="submit" value="o"></td>
-                    <td><input name="lettre" type="submit" value="p"></td>
-                    <td><input name="lettre" type="submit" value="q"></td>
-                    <td><input name="lettre" type="submit" value="r"></td>
-                    <td><input name="lettre" type="submit" value="s"></td>
-                    <td><input name="lettre" type="submit" value="t"></td>
-                    <td><input name="lettre" type="submit" value="u"></td>
-                </tr>
-                <tr>
-                    <td><input name="lettre" type="submit" value="v"></td>
-                    <td><input name="lettre" type="submit" value="w"></td>
-                    <td><input name="lettre" type="submit" value="x"></td>
-                    <td><input name="lettre" type="submit" value="y"></td>
-                    <td><input name="lettre" type="submit" value="z"></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </table>
-        </form>
-
-    {% elif statut == 'gagne' %}
-        <p>Bravo ! Vous avez gagné. Le mot était : <strong>{{ mot }}</strong></p>
-    {% else %}
-        <p>Dommage ! Vous avez perdu. Le mot était : <strong>{{ mot }}</strong></p>
-    {% endif %}
-
-    <p>Lettres essayées : {{ lettres_trouvees|join(', ') if lettres_trouvees else '—' }}</p>
-  </div>
-</body>
-</html>
-"""
-
-GABARIT_HTML_ACCUEIL = r"""
-<!doctype html>
-<html lang="fr">
-<head>
- <meta charset="utf-8">
- <title>Pendu</title>
- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <div class="content" id="accueil">
-  <h1 class="title">Jeu du pendu - Accueil</h1>
-  <p>Bienvenue !<p>
-
-  <form action="/demarrer" method="post">
-    <label>Entrez votre nom: <input type="text" id="nom" name="nom" autofocus/></label>
-    <button type="submit">Démarrer</button>
-  </form>
-  </div>
-  
-</body>
-</html>
-"""
+def sauvegarder_scores(highscores):
+    with open("highscores.txt", "w") as f:
+        i = 1
+        for ligne in highscores:
+            f.write((str)(i) + ". " + ligne[0] + "; " + str(ligne[1]) + "\n")
+            i += 1
+    
 
 if __name__ == "__main__":
     appli.run(debug=True)
