@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 appli = Flask(__name__)
 appli.config["SECRET_KEY"] = "secret"
 
-nb_max_essais = 15
+nb_max_essais = 5
 mots = []
 entrees_max = 5 # Nombre d'entrées maximum dans le fichier highscores.txt.
 
@@ -13,8 +13,6 @@ with open("dictionnaire.txt", encoding="utf-8") as f:
     tableau_de_mots = [ligne.strip().split(";")[0] for ligne in f if ligne.strip()]
 
 for mot in tableau_de_mots:
-    mot = unicodedata.normalize('NFKD', mot)  
-    mot = ''.join([c for c in mot if not unicodedata.combining(c)])  
     mots.append(mot.upper())
 
 
@@ -44,8 +42,7 @@ def demarrer():
 def jeu():
     if "mot" not in session:
         demarrer_nouvelle_partie()
-
-    mot = session.get("mot", "PYTHON")
+    mot_avec_accent = session.get("mot", "PYTHON")
     lettres_trouvees = session.get("lettres_trouvees", [])
     essais_restants = session.get("essais_restants", nb_max_essais)
     statut = session.get("statut", "en_cours")
@@ -54,11 +51,16 @@ def jeu():
     victoires_consecutives = session.get("victoires_consecutives", 0)
 
     liste_masquee = []
-    for caractere in mot:
+    mot_sans_accent = unicodedata.normalize('NFKD', mot_avec_accent)  
+    mot_sans_accent = ''.join([c for c in mot_sans_accent if not unicodedata.combining(c)])
+    i = 0
+    for caractere in mot_sans_accent:
         if caractere in lettres_trouvees:
-            liste_masquee.append(caractere)
+            caractere_avec_accent = mot_avec_accent[i]
+            liste_masquee.append(caractere_avec_accent)
         else:
             liste_masquee.append("_")
+        i += 1
     mot_masque = " ".join(liste_masquee)
 
     erreurs = nb_max_essais - essais_restants
@@ -86,15 +88,6 @@ def jeu():
  |   |
  O   |
  |   |
-     |
-     |
-=======
-""",
-        """
- +---+
- |   |
- O   |
-/|   |
      |
      |
 =======
@@ -141,7 +134,7 @@ def jeu():
         statut=statut,
         nb_max_essais=nb_max_essais,
         potence_ascii=potence_ascii,
-        mot=mot,
+        mot=mot_avec_accent,
         nom=nom,
         highscores=highscores,
         alphabet = string.ascii_lowercase,
@@ -151,31 +144,32 @@ def jeu():
 
 @appli.route("/proposer", methods=["POST"])
 def proposer():
-    mot = session.get("mot")
+    mot_avec_accent = session.get("mot")
+    mot_sans_accent = unicodedata.normalize('NFKD', mot_avec_accent)  
+    mot_sans_accent = ''.join([c for c in mot_sans_accent if not unicodedata.combining(c)])  
     lettres_trouvees = session.get("lettres_trouvees", [])
     essais_restants = session.get("essais_restants", nb_max_essais)
     statut = session.get("statut", "en_cours")
     victoires_consecutives = session.get("victoires_consecutives", 0)
 
-    if statut == "en_cours" and mot:
+    if statut == "en_cours" and mot_sans_accent:
         lettre = request.form.get("lettre", "").strip().upper()
 
         if len(lettre) == 1 and lettre.isalpha():
             if lettre not in lettres_trouvees:
                 lettres_trouvees.append(lettre)
-                if lettre not in mot:
+                if lettre not in mot_sans_accent:
                     essais_restants -= 1
-
-                tout_trouve = True
-                for c in mot:
-                    if c not in lettres_trouvees:
-                        tout_trouve = False
-                        break
-
-                if tout_trouve:
-                    statut = "gagne"
-                    victoires_consecutives += 1
-                elif essais_restants <= 0:
+                else:
+                    tout_trouve = True
+                    for c in mot_sans_accent:
+                        if c not in lettres_trouvees:
+                            tout_trouve = False
+                            break
+                    if tout_trouve:
+                        statut = "gagne"
+                        victoires_consecutives += 1
+                if essais_restants <= 0:
                     statut = "perdu"
                     highscores = session.get("highscores", [])
                     highscores.append((session.get("nom"), victoires_consecutives))
@@ -184,6 +178,8 @@ def proposer():
                         highscores.pop()
                     sauvegarder_scores(highscores)
                     victoires_consecutives = 0
+
+                
 
     session["lettres_trouvees"] = lettres_trouvees
     session["essais_restants"] = essais_restants
