@@ -178,7 +178,7 @@ def proposer():
                         nom_deja_enregistre = False
                         i = 0
                         for entree in highscores:
-                            if entree[0] == nom and entree[1] > victoires_consecutives:
+                            if entree[0] == nom and entree[1] < victoires_consecutives:
                                 nom_deja_enregistre = True
                                 highscores[i] = nouvelle_entree
                                 break
