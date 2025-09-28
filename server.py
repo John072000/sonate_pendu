@@ -172,11 +172,25 @@ def proposer():
                 if essais_restants <= 0:
                     statut = "perdu"
                     highscores = session.get("highscores", [])
-                    highscores.append((session.get("nom"), victoires_consecutives))
-                    highscores.sort(key=lambda x: x[1], reverse=True)
-                    while len(highscores) > entrees_max:
-                        highscores.pop()
-                    sauvegarder_scores(highscores)
+                    nom = session.get("nom")
+                    if victoires_consecutives > 0:
+                        nouvelle_entree = (nom, victoires_consecutives)
+                        nom_deja_enregistre = False
+                        i = 0
+                        for entree in highscores:
+                            if entree[0] == nom and entree[1] > victoires_consecutives:
+                                nom_deja_enregistre = True
+                                highscores[i] = nouvelle_entree
+                                break
+                            i+= 1
+                        if not nom_deja_enregistre:
+                            highscores.append(nouvelle_entree)
+                        print(highscores)
+                        if highscores:
+                            highscores.sort(key=lambda x: x[1], reverse=True)
+                        while len(highscores) > entrees_max:
+                            highscores.pop()
+                        sauvegarder_scores(highscores)
                     victoires_consecutives = 0
 
                 
