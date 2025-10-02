@@ -4,23 +4,28 @@
 
 {% block content %}
 
-<div class="barre">
-  <p> Bienvenue {{ nom }} </p>
-  {% if highscores %}
-  <p> Tableau des scores: </p>
-  <table id="highscores">
-    {% for entree in highscores %}
-      <tr><td>{{ loop.index }}. {{ highscores[loop.index0][0] }}: {{ highscores[loop.index0][1] }}</td></tr>
-    {% endfor %}
-  </table>
-  {% endif %}
-  <p> Victoires consécutives: {{ victoires_consecutives }}</p>
+<div class="sidebar">
+  <div class="tableau_des_scores">
+    <p> Bienvenue, {{ nom }}. </p>
+    {% if highscores %}
+    <p> Tableau des scores: </p>
+    <table id="highscores">
+      {% for entree in highscores %}
+        <tr><td>{{ loop.index }}. {{ highscores[loop.index0][0] }}: {{ highscores[loop.index0][1] }}</td></tr>
+      {% endfor %}
+    </table>
+    {% endif %}
+    <p> Victoires consécutives: {{ victoires_consecutives }}</p>
+  </div>
+  <div id="boutons">
+    <a class="bouton" href="{{ url_for('nouveau') }}">Nouvelle partie</a>
+    <a class="bouton" href="{{ url_for('accueil') }}">Changer d'utilisateur</a>
+  </div>
 </div>
 
 <div class="content">
   <h1>Jeu du Pendu</h1>
-  <p><a href="{{ url_for('nouveau') }}">Nouvelle partie</a></p>
-
+  
   <pre>{{ potence_ascii }}</pre>
 
   <p>Mot : <strong>{{ mot_masque }}</strong></p>
@@ -39,11 +44,14 @@
   </form>
   {% elif statut == 'gagne' %}
     <p>Bravo ! Vous avez gagné. Le mot était : <strong>{{ mot }}</strong></p>
+    <p><a href="{{ url_for('nouveau') }}">Cliquez ici pour continuer</a></p>
   {% else %}
     <p>Dommage ! Vous avez perdu. Le mot était : <strong>{{ mot }}</strong></p>
+    <p><a href="{{ url_for('nouveau') }}">Voulez-vous recommencer ?</a></p>
  {% endif %}
 
   <p>Lettres essayées : {{ lettres_trouvees|join(', ') if lettres_trouvees else '—' }}</p>
+  
 </div>
   
 {% endblock %}

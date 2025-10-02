@@ -29,6 +29,7 @@ def demarrer_nouvelle_partie():
 
 
 @appli.route("/")
+@appli.route("/accueil")
 def accueil():
     return render_template("accueil.html")
 

@@ -22,15 +22,43 @@ div.content#accueil {
   margin-top: 10%
 }
 
-div.barre {
+.sidebar {
+  position: fixed;
 	margin: 1.2% 0.2%;
 	padding: 7px;
-	position: fixed;
+}
+
+.tableau_des_scores {
+  width: fit-content;
+	padding: 0px 11px;
 	font-family:'Times New Roman', Times, serif;
   font-size: large;
   border: 5px solid #3f8feb;
   border-radius: 10px;
   background-color: #bedcff;
+}
+
+#boutons{
+  font-size: 1.2em;
+  margin-top: 13px;
+  text-align: center;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.bouton{
+  border: 4px solid #89b6eb;
+  border-radius: 10px;
+  background-color: #cbdff5;
+  color:rgb(0, 0, 0);
+  padding: 8px 10px 7px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 table#lettres {
