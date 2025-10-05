@@ -8,7 +8,7 @@ nb_max_essais = 5
 mots = []
 entrees_max = 5 # Nombre d'entrées maximum dans le fichier highscores.txt.
 
-string.ascii_lowercase
+
 with open("dictionnaire.txt", encoding="utf-8") as f:
     tableau_de_mots = [ligne.strip().split(";")[0] for ligne in f if ligne.strip()]
 
@@ -33,11 +33,13 @@ def demarrer_nouvelle_partie():
 def accueil():
     return render_template("accueil.html")
 
+
 @appli.route("/demarrer", methods=["POST"])
 def demarrer():
     nom = request.form.get("nom", "")
     session["nom"] = nom
     return redirect(url_for("jeu"))
+
 
 @appli.route("/jeu")
 def jeu():
@@ -155,7 +157,6 @@ def proposer():
 
     if statut == "en_cours" and mot_sans_accent:
         lettre = request.form.get("lettre", "").strip().upper()
-
         if len(lettre) == 1 and lettre.isalpha():
             if lettre not in lettres_trouvees:
                 lettres_trouvees.append(lettre)
@@ -175,26 +176,9 @@ def proposer():
                     highscores = session.get("highscores", [])
                     nom = session.get("nom")
                     if victoires_consecutives > 0:
-                        nouvelle_entree = (nom, victoires_consecutives)
-                        nom_deja_enregistre = False
-                        i = 0
-                        for entree in highscores:
-                            if entree[0] == nom and entree[1] < victoires_consecutives:
-                                nom_deja_enregistre = True
-                                highscores[i] = nouvelle_entree
-                                break
-                            i+= 1
-                        if not nom_deja_enregistre:
-                            highscores.append(nouvelle_entree)
-                        print(highscores)
-                        if highscores:
-                            highscores.sort(key=lambda x: x[1], reverse=True)
-                        while len(highscores) > entrees_max:
-                            highscores.pop()
+                        ajouter_score(highscores, nom, victoires_consecutives)
                         sauvegarder_scores(highscores)
                     victoires_consecutives = 0
-
-                
 
     session["lettres_trouvees"] = lettres_trouvees
     session["essais_restants"] = essais_restants
@@ -206,6 +190,14 @@ def proposer():
 
 @appli.route("/nouveau")
 def nouveau():
+    statut = session.get("statut", "en_cours")
+    if statut == "en_cours" or statut == "gagne":
+        victoires_consecutives = session.get("victoires_consecutives", 0)
+        if victoires_consecutives > 0:
+            highscores = session.get("highscores", [])
+            nom = session.get("nom")
+            ajouter_score(highscores, nom, victoires_consecutives)
+            sauvegarder_scores(highscores)
     demarrer_nouvelle_partie()
     return redirect(url_for("jeu"))
 
@@ -229,6 +221,7 @@ def lire_scores():
         f.close()
     return highscores
 
+
 def sauvegarder_scores(highscores):
     with open("highscores.txt", "w") as f:
         i = 1
@@ -236,6 +229,24 @@ def sauvegarder_scores(highscores):
             f.write((str)(i) + ". " + ligne[0] + "; " + str(ligne[1]) + "\n")
             i += 1
     
+
+def ajouter_score(highscores, nom, victoires_consecutives):
+    nouvelle_entree = (nom, victoires_consecutives)
+    nom_deja_enregistre = False
+    i = 0
+    for entree in highscores:
+        if entree[0] == nom:
+            nom_deja_enregistre = True
+            if entree[1] < victoires_consecutives:
+                highscores[i] = nouvelle_entree
+            break
+        i+= 1
+    if not nom_deja_enregistre:
+        highscores.append(nouvelle_entree)
+    highscores.sort(key=lambda x: x[1], reverse=True)
+    while len(highscores) > entrees_max:
+        highscores.pop()
+
 
 if __name__ == "__main__":
     appli.run(debug=True)
